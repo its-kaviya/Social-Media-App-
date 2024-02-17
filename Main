@@ -1,0 +1,102 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main extends JFrame {
+
+	private List<Post> posts;
+	private JTextArea postTextArea;
+	private JTextField titleField;
+	private JTextArea contentArea;
+
+	public Main() {
+		posts = new ArrayList<>();
+
+		setTitle("Social Media App");
+		setSize(400, 400);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		initComponents();
+
+		pack();
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
+
+	private void initComponents() {
+		postTextArea = new JTextArea();
+		postTextArea.setEditable(false);
+
+		JScrollPane scrollPane = new JScrollPane(postTextArea);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+		titleField = new JTextField(20);
+		contentArea = new JTextArea(5, 20);
+
+		JButton postButton = new JButton("Post");
+		postButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String title = titleField.getText();
+				String content = contentArea.getText();
+
+				if (!title.isEmpty() && !content.isEmpty()) {
+					Post post = new Post(title, content);
+					posts.add(post);
+					updatePostTextArea();
+					titleField.setText("");
+					contentArea.setText("");
+				}
+			}
+		});
+
+		setLayout(new BorderLayout());
+		add(scrollPane, BorderLayout.CENTER);
+
+		JPanel inputPanel = new JPanel();
+		inputPanel.setLayout(new GridLayout(3, 2));
+		inputPanel.add(new JLabel("Title:"));
+		inputPanel.add(titleField);
+		inputPanel.add(new JLabel("Content:"));
+		inputPanel.add(new JScrollPane(contentArea));
+		inputPanel.add(new JLabel()); // Empty label for layout purposes
+		inputPanel.add(postButton);
+
+		add(inputPanel, BorderLayout.SOUTH);
+	}
+
+	private void updatePostTextArea() {
+		StringBuilder sb = new StringBuilder();
+		for (Post post : posts) {
+			sb.append(post).append("\n");
+		}
+		postTextArea.setText(sb.toString());
+	}
+
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				new Main();
+			}
+		});
+	}
+
+	private static class Post {
+		private String title;
+		private String content;
+
+		public Post(String title, String content) {
+			this.title = title;
+			this.content = content;
+		}
+
+		@Override
+		public String toString() {
+			return title + " - " + content;
+		}
+	}
+}
